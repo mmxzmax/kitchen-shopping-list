@@ -11,7 +11,15 @@ export default defineConfig({
   server: {
     port: 4200,
     host: 'localhost',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: false,
+      },
+    }
   },
+
+  
 
   preview: {
     port: 4300,
@@ -19,11 +27,6 @@ export default defineConfig({
   },
 
   plugins: [vue(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
 
   build: {
     outDir: '../../dist/apps/kitchen-list-frontend',

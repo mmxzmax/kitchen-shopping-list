@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import NxWelcome from '../app/NxWelcome.vue';
+import { ref } from 'vue'
+
+const data = ref(null)
+const error = ref(null)
+
+fetch('/api/hello')
+  .then((res) => res.json())
+  .then((json) => (data.value = json))
+  .catch((err) => (error.value = err))
 </script>
 
 <template>
-  <main>
-    <NxWelcome title="kitchen-list-frontend" />
-  </main>
+  <main>{{ data }} {{ error }}</main>
 </template>
