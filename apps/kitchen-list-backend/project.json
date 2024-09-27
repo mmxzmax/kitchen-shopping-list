@@ -1,26 +1,24 @@
 {
-  "name": "kitchen-list",
+  "name": "kitchen-list-backend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/kitchen-list/src",
+  "sourceRoot": "apps/kitchen-list-backend/src",
   "projectType": "application",
   "tags": [],
   "targets": {
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
-        "buildTarget": "kitchen-list:build",
+        "buildTarget": "kitchen-list-backend:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "kitchen-list:build:development"
+          "buildTarget": "kitchen-list-backend:build:development"
         },
         "production": {
-          "buildTarget": "kitchen-list:build:production"
+          "buildTarget": "kitchen-list-backend:build:production"
         }
       }
     }
