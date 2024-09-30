@@ -5,7 +5,8 @@
   "scripts": {
     "serve":"nx run-many --parallel --target=serve --configuration=development --projects=kitchen-list-frontend,kitchen-list-backend",
     "build": "nx run-many --parallel=false --target=build --configuration=production --projects=kitchen-list-frontend,kitchen-list-backend",
-    "test":"nx run-many --parallel=false --target=test --projects=kitchen-list-frontend,kitchen-list-backend"
+    "test":"nx run-many --parallel=false --target=test --projects=kitchen-list-frontend,kitchen-list-backend",
+    "start": "node main.js"
   },
   "private": true,
   "dependencies": {
