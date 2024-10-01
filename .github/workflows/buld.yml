@@ -36,9 +36,9 @@ jobs:
       matrix:
         include:
           - image: ghcr.io/${{ github.repository }}-backend
-            file: /apps/kitchen-list-backend/Dockerfile
+            file: ./apps/kitchen-list-backend/Dockerfile
           - image: ghcr.io/${{ github.repository }}-frontend
-            file: /apps/kitchen-list-frontend/Dockerfile
+            file: ./apps/kitchen-list-frontend/Dockerfile
         
     steps:
       - name: Download build
