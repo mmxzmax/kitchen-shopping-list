@@ -39,7 +39,7 @@ jobs:
           ADMIN_EMAIL: ${{secrets.ADMIN_EMAIL}}
           PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
         run: |
-          docker --context remote compose -f docker-compose.yml up -d
+          docker --context remote compose -f docker-compose.yml up -d --force-recreate --build
 
       - name: cleanup
         run: rm -rf ~/.ssh
