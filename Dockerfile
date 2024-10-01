@@ -2,18 +2,13 @@ FROM node:20.17.0-alpine AS base-builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
 COPY . .
-RUN npm run build
 
 FROM node:20.17.0-alpine AS finalnode
 
 WORKDIR /app
 COPY --from=base-builder /app/dist/apps/kitchen-list-backend .
 COPY --from=base-builder /app/node_modules ./node_modules
-
-RUN ls
 
 CMD ["node", "main.js"]
 
