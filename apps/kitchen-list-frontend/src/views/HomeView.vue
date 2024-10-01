@@ -11,5 +11,5 @@ fetch('/api/hello')
 </script>
 
 <template>
-  <main>{{ data }} {{ error }}</main>
+  <main>{{ data }} testing ci {{ error }}</main>
 </template>
