@@ -21,6 +21,26 @@
           "buildTarget": "kitchen-list-backend:build:production"
         }
       }
-    }
+    },
+    "build": {
+			"executor": "@nx/webpack:webpack",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/apps/kitchen-list-backend",
+				"main": "apps/kitchen-list-backend/src/main.ts",
+				"tsConfig": "apps/kitchen-list-backend/tsconfig.app.json",
+				"target": "node",
+				"compiler": "tsc",
+				"generatePackageJson": true,
+				"webpackConfig": "apps/kitchen-list-backend/webpack.config.js"
+			},
+			"configurations": {
+				"production": {
+					"optimization": true,
+					"extractLicenses": true,
+					"inspect": false
+				}
+			}
+		}
   }
 }
