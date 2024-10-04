@@ -39,7 +39,8 @@ jobs:
           ADMIN_EMAIL: ${{secrets.ADMIN_EMAIL}}
           PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
         run: |
-          docker --context remote compose -f docker-compose.yml pull
+          docker --context remote compose -f docker-compose.yml pull nginx
+          docker --context remote compose -f docker-compose.yml pull node
           docker --context remote compose -f docker-compose.yml up --force-recreate --build -d
           docker --context remote image prune -f
 

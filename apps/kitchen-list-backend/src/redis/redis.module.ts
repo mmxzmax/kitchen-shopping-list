@@ -8,8 +8,10 @@ import { REDIS } from './redis.constants';
     {
       provide: REDIS,
       useFactory: async () => {
-        return await Redis.createClient()
-          .on('error', (err) => console.log('Redis Client Error', err))
+        return await Redis.createClient({
+          url: 'redis://redis:6379'
+        })
+          .on('error', (err) => console.error('Redis Client Error', err))
           .connect();
       },
     },
