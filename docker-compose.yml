@@ -33,6 +33,15 @@ services:
     restart: always
     environment:
       - PORT=3000
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - REDIS_SECRET=${REDIS_SECRET}
+      - REDIS_URL=${REDIS_URL}
+      - DB_NAME=${DB_NAME}
     healthcheck:
       test: wget --no-verbose --tries=10 --spider http://localhost:3000/api/healthcheck || exit 1
       timeout: 3s
@@ -48,6 +57,15 @@ services:
     restart: always
     environment:
       - PORT=3000
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - REDIS_SECRET=${REDIS_SECRET}
+      - REDIS_URL=${REDIS_URL}
+      - DB_NAME=${DB_NAME}
     healthcheck:
       test: wget --no-verbose --tries=10 --spider http://localhost:3001/api/healthcheck || exit 1
       timeout: 3s
