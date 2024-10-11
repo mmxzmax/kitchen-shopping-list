@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
+import { TypeOrmSQLITETestingModule } from '../test-utils/TypeORMSQLITETestingModule';
+import { UsersModule } from '../users/users.module';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [...TypeOrmSQLITETestingModule(), UsersModule],
       providers: [AuthService],
     }).compile();
 
