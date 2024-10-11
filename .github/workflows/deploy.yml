@@ -11,7 +11,7 @@ jobs:
     environment: production
 
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4.1.1
         env:
           GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,6 +38,12 @@ jobs:
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
           ADMIN_EMAIL: ${{secrets.ADMIN_EMAIL}}
           PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          REDIS_SECRET: ${{secrets.REDIS_SECRET}}
+          REDIS_URL: ${{secrets.REDIS_URL}}
+          DB_NAME: ${{secrets.DB_NAME}}
         run: |
           docker --context remote compose -f docker-compose.yml pull nginx
           docker --context remote compose -f docker-compose.yml pull node
