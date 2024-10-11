@@ -1,18 +1,20 @@
 services:
   db:
-      image: postgres
-      restart: always
-      environment:
-        - POSTGRES_PASSWORD=${DB_PASSWORD}
-      container_name: postgres
-      volumes:
-        - postgres-vol:/var/lib/postgresql/data:Z
-      ports:
-        - '5432:5432'
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    container_name: postgres
+    volumes:
+      - postgres-vol:/var/lib/postgresql/data:Z
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres
   redis:
     image: redis:latest
     ports:
-      - '6379:6379'      
+      - '6379:6379'
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -20,9 +22,15 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=${ADMIN_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_CONFIG_SERVER_MODE=False
     ports:
       - '5050:80'
     depends_on:
-      - db    
+      - db
+    networks:
+      - postgres
 volumes:
-  postgres-vol:                   
+  postgres-vol:
+networks:
+  postgres:
+    driver: bridge  

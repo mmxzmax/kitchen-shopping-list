@@ -1,8 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { LoginUserDto } from "./models/login-user.dto";
-import { RegisterUserDto } from "./models/register-user.dto";
-import { LocalGuard } from "../guards/local.guard";
+import { Controller, Post, Body, UseGuards, Req, Get, Res } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LocalGuard } from '../guards/local.guard';
+import { LoginUserDto } from '../users/models/login-user.dto';
+import { RegisterUserDto } from '../users/models/register-user.dto';
+import { LoggedInGuard } from '../guards/logged-in.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -15,8 +16,23 @@ export class AuthController {
 
   @UseGuards(LocalGuard)
   @Post('login')
-  loginUser(@Req() req, @Body() user: LoginUserDto) {
-    console.log(user);
-    return req.session;
+  loginUser(@Req() req, @Body() _user: LoginUserDto) {
+    return req.session['passport'];
+  }
+
+  @UseGuards(LoggedInGuard)
+  @Get('status')
+  status() {
+    return true;
+  }
+
+  @Get('logout')
+  async logout(@Req() req, @Res() res ) {
+    req.logout(req.user, (err) => {
+      if (err) {
+        return res.status(500).json({ message: "Error during logout." });
+      }
+      res.status(200).json({ message: "Logout successful." });
+    });
   }
 }

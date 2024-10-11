@@ -9,15 +9,41 @@ import session from 'express-session';
 import { RedisClientType } from 'redis';
 import { AuthModule } from '../auth/auth.module';
 import { RedisModule } from '../redis/redis.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [AuthModule, RedisModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
+    RedisModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [],
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
+    }),
+  ],
   providers: [AppService, Logger],
   controllers: [AppController],
 })
 export class AppModule {
   store: RedisStore;
-  constructor(@Inject(REDIS) private readonly redis: RedisClientType) {
+  constructor(
+    @Inject(REDIS) private readonly redis: RedisClientType,
+    private readonly cofig: ConfigService
+  ) {
     this.store = new RedisStore({
       client: this.redis,
       prefix: 'myapp:',
@@ -29,7 +55,7 @@ export class AppModule {
         session({
           store: this.store,
           saveUninitialized: false,
-          secret: 'sup3rs3cr3t',
+          secret: this.cofig.get('REDIS_SECRET'),
           resave: false,
           cookie: {
             sameSite: true,
