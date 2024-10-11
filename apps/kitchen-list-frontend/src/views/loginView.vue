@@ -8,9 +8,25 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 
 import { ref } from "vue";
+import axios from "axios";
+import router from "../router";
 
 const email = ref(null);
 const password = ref(null);
+
+const login = async function () {
+  const data = {
+    email: email.value,
+    password: password.value,
+  };
+  if (Object.values(data).every((v) => !!v)) {
+   await axios.post("/api/auth/login", {
+      email: email.value,
+      password: password.value,
+    });
+    router.push('/profile');
+  }
+};
 </script>
 
 <template>
@@ -36,7 +52,7 @@ const password = ref(null);
       </InputGroup>
     </p>
     <Divider />
-    <Button label="Submit" />
+    <Button @click="login()" label="Submit" />
   </Fieldset>
 </template>
 

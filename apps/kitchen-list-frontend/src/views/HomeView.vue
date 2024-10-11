@@ -11,7 +11,7 @@ const items = ref([
   },
   {
     label: "signIn",
-    icon: "pi pi-user",
+    icon: "pi pi-sign-in",
     route: "/login",
   },
 ]);
