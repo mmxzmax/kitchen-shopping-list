@@ -4,6 +4,7 @@ import ProfileView from '../views/profileView.vue';
 import RegisterView from '../views/registerView.vue';
 import LoginView from '../views/loginView.vue';
 import axios from 'axios';
+import List from '../components/list.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,14 +13,20 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView,
       meta: {
         requiresAuth: true,
       },
+      children: [
+        {
+          path: '/',
+          component: List
+        },
+        {
+          path:'/profile',
+          name: 'profile',
+          component: ProfileView
+        }
+      ]
     },
     {
       path: '/register',

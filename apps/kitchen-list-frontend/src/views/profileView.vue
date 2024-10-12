@@ -4,24 +4,10 @@ import Card from "primevue/card";
 import Menubar from "primevue/menubar";
 import { ref } from "vue";
 import router from "../router";
-
-const items = ref([
-  {
-    label: "signOut",
-    icon: "pi pi-sign-out",
-    command: async () => {
-      await axios.get("/api/auth/logout");
-      router.push("/");
-    },
-  },
-]);
 </script>
 
 <template>
   <div class="about">
-    <header>
-      <Menubar :model="items" />
-    </header>
     <Card>
       <template #title>Simple Card</template>
       <template #content>

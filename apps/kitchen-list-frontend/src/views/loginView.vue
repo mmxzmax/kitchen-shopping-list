@@ -4,8 +4,8 @@ import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
-import Button from 'primevue/button';
-import Divider from 'primevue/divider';
+import Button from "primevue/button";
+import Divider from "primevue/divider";
 
 import { ref } from "vue";
 import axios from "axios";
@@ -20,11 +20,12 @@ const login = async function () {
     password: password.value,
   };
   if (Object.values(data).every((v) => !!v)) {
-   await axios.post("/api/auth/login", {
+   const res =  await axios.post("/api/auth/login", {
       email: email.value,
       password: password.value,
     });
-    router.push('/profile');
+    localStorage.setItem('userId', res.data?.user?.id)
+    router.push("/");
   }
 };
 </script>
@@ -36,23 +37,18 @@ const login = async function () {
         <InputGroupAddon>
           <i class="pi pi-inbox" />
         </InputGroupAddon>
-        <InputText 
-          v-model="email"
-          placeholder="Email"
-        />
+        <InputText v-model="email" placeholder="Email" />
       </InputGroup>
       <InputGroup>
         <InputGroupAddon>
           <i class="pi pi-pen-to-square" />
         </InputGroupAddon>
-        <Password 
-          v-model="password"
-          placeholder="Password"
-        />
+        <Password v-model="password" :feedback="false"   placeholder="Password" />
       </InputGroup>
     </p>
+    <RouterLink to="/register">Register</RouterLink>
     <Divider />
-    <Button @click="login()" label="Submit" />
+    <Button @click="login()" label="Login" />
   </Fieldset>
 </template>
 

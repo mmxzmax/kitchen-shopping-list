@@ -14,8 +14,8 @@ services:
     command: ["redis-server", "--bind", "redis", "--port", "6379"]
   nginx:
     build:
-      context: .
-      dockerfile: apps/kitchen-list-frontend/Dockerfile
+      context: ./apps/kitchen-list-frontend
+      dockerfile: Dockerfile
     image: ngnix
     ports:
       - '80:80'
@@ -31,12 +31,22 @@ services:
 
   node:
     build:
-      context: .
-      dockerfile: apps/kitchen-list-backend/Dockerfile
+      context: ./apps/kitchen-list-backend
+      dockerfile: Dockerfile
     image: node
     ports:
       - '3000:3000'
     restart: always
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+      - DB_USERNAME=${DB_USERNAME}
+      - REDIS_SECRET=${REDIS_SECRET}
+      - REDIS_URL=redis://redis:6379
+      - DB_NAME=${DB_NAME}
     healthcheck:
       test: wget --no-verbose --tries=10 --spider http://localhost:3000/api/healthcheck || exit 1
       timeout: 3s
@@ -47,12 +57,22 @@ services:
       - db
   node2:
     build:
-       context: .
-       dockerfile: apps/kitchen-list-backend/Dockerfile
+       context: ./apps/kitchen-list-backend
+       dockerfile: Dockerfile
     image: node2
     ports:
       - '3001:3000'
     restart: always
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+      - DB_USERNAME=${DB_USERNAME}
+      - REDIS_SECRET=${REDIS_SECRET}
+      - REDIS_URL=redis://redis:6379
+      - DB_NAME=${DB_NAME}
     healthcheck:
       test: wget --no-verbose --tries=10 --spider http://localhost:3000/api/healthcheck || exit 1
       timeout: 3s

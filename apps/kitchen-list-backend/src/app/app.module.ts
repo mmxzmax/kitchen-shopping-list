@@ -11,6 +11,7 @@ import { AuthModule } from '../auth/auth.module';
 import { RedisModule } from '../redis/redis.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GoodsListModule } from '../goods-list/goods-list.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         autoLoadEntities: true,
       }),
     }),
+    GoodsListModule,
   ],
   providers: [AppService, Logger],
   controllers: [AppController],
@@ -60,7 +62,7 @@ export class AppModule {
           cookie: {
             sameSite: true,
             httpOnly: false,
-            maxAge: 60000,
+            maxAge: 600000000,
           },
         }),
         passport.initialize(),
