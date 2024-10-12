@@ -1,5 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../users/models/user.entity';
+import { GoodEntity } from '../goods-list/models/good.entity';
 
 export const TypeOrmSQLITETestingModule = () => [
   TypeOrmModule.forRoot({
@@ -9,5 +10,5 @@ export const TypeOrmSQLITETestingModule = () => [
     entities: [UserEntity],
     synchronize: true,
   }),
-  TypeOrmModule.forFeature([UserEntity]),
+  TypeOrmModule.forFeature([UserEntity, GoodEntity]),
 ];
