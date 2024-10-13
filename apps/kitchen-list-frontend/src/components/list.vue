@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Ref, ref, watch } from "vue";
-import PickList from "primevue/picklist";
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
@@ -10,6 +9,17 @@ import InputGroup from "primevue/inputgroup";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
 import axios from "axios";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import OrderList from "primevue/orderlist";
+
+interface ISuggestionListItem {
+  name: string;
+  id: number;
+}
+
+interface IListItem extends ISuggestionListItem {
+  actual: boolean;
+}
 
 const userId = ref(localStorage.getItem("userId"));
 
@@ -19,9 +29,9 @@ const letter = ref();
 
 const newItem = ref();
 
-const suggestion: Ref<
-  [{ name?: string; id: number }[], { name?: string; id: number, actual: boolean }[]]
-> = ref([[], []]);
+const suggestion: Ref<ISuggestionListItem[]> = ref([]);
+
+const list: Ref<IListItem[]> = ref([]);
 
 const changeLetter = async function (l?: string) {
   if (!l) {
@@ -29,9 +39,8 @@ const changeLetter = async function (l?: string) {
   }
   const res = await axios.get(`/api/goods-list/${l}`);
   if (res.data?.length) {
-    suggestion.value[0] = res.data?.filter(
-      (item: { name: string; id: number }) =>
-        !suggestion.value[1].find((v) => v.id === item.id)
+    suggestion.value = res.data?.filter(
+      (item: { name: string; id: number }) => !list.value.find((v) => v.id === item.id)
     );
   }
 };
@@ -42,13 +51,22 @@ const getLetters = async function () {
   letter.value = letters.value[0];
 };
 
+const addItem = function (newItem: ISuggestionListItem) {
+  if (!list.value.find((item) => item.id === newItem.id)) {
+    list.value.push({ ...newItem, actual: true });
+  }
+};
+
 const addNewItem = async function () {
   const res = await axios.post("/api/goods-list", { name: newItem.value });
-  if (!suggestion.value[1].find((item) => item.id === res.data.id)) {
-    suggestion.value[1].push({...res.data, actual: true});
-  }
+  addItem(res.data);
   newItem.value = "";
   getLetters();
+};
+
+const removeItem = function (id: number) {
+  const index = list.value.findIndex((item) => item.id === id);
+  list.value.splice(index, 1);
 };
 
 watch(letter, (newValue?: string) => {
@@ -79,21 +97,68 @@ getLetters();
             severity="success"
           />
         </InputGroup>
+
         <Divider />
-        <PickList
+
+        <OrderList
+          class="order-list"
           v-model="suggestion"
-          :showSourceControls="false"
-          :showTargetControls="false"
           dataKey="id"
-          breakpoint="1400px"
+          pt:pcListbox:root="w-full sm:w-56"
+          :buttonProps="{ style: { display: 'none' } }"
+          :unstyled="true"
         >
           <template #option="{ option }">
-            {{ option.name }}
+            <InputGroup>
+              <InputGroupAddon>
+                <span>{{ option.name }}</span>
+              </InputGroupAddon>
+              <Button icon="pi pi-plus" @click="addItem(option)" severity="success" />
+            </InputGroup>
           </template>
-        </PickList>
+        </OrderList>
+
+        <Divider />
+
+        <OrderList
+          class="order-list"
+          v-model="list"
+          dataKey="id"
+          pt:pcListbox:root="w-full sm:w-56"
+          :buttonProps="{ style: { display: 'none' } }"
+          :unstyled="true"
+        >
+          <template #option="{ option }">
+            <InputGroup>
+              <InputGroupAddon>
+                <span>{{ option.name }}</span>
+              </InputGroupAddon>
+              <Button
+                icon="pi pi-times"
+                @click="removeItem(option.id)"
+                severity="danger"
+              />
+            </InputGroup>
+          </template>
+        </OrderList>
       </TabPanels>
     </Tabs>
   </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.order-list {
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+    li {
+      margin: 0.25rem;
+    }
+  }
+}
+</style>

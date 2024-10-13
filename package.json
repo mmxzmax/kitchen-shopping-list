@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "serve-fr": "nx run kitchen-list-frontend:serve",
+    "serve-bc":"nx run kitchen-list-backend:serve --watch",
     "serve": "nx run-many --parallel --target=serve --configuration=development --projects=kitchen-list-frontend,kitchen-list-backend",
     "build": "nx run-many --parallel=false --target=build --configuration=production --projects=kitchen-list-frontend,kitchen-list-backend",
     "test": "nx run-many --parallel=false --target=test --projects=kitchen-list-frontend,kitchen-list-backend",
