@@ -12,6 +12,7 @@ import { RedisModule } from '../redis/redis.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GoodsListModule } from '../goods-list/goods-list.module';
+import { GoodsCategoriesModule } from '../goods-categories/goods-categories.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { GoodsListModule } from '../goods-list/goods-list.module';
       }),
     }),
     GoodsListModule,
+    GoodsCategoriesModule,
   ],
   providers: [AppService, Logger],
   controllers: [AppController],

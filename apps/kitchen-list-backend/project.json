@@ -11,11 +11,13 @@
       "dependsOn": ["build"],
       "options": {
         "buildTarget": "kitchen-list-backend:build",
-        "runBuildTargetDependencies": false
+        "runBuildTargetDependencies": false,
+        "watch": true
       },
       "configurations": {
         "development": {
-          "buildTarget": "kitchen-list-backend:build:development"
+          "buildTarget": "kitchen-list-backend:build:development",
+          "watch": true
         },
         "production": {
           "buildTarget": "kitchen-list-backend:build:production"
@@ -32,7 +34,8 @@
 				"target": "node",
 				"compiler": "tsc",
 				"generatePackageJson": true,
-				"webpackConfig": "apps/kitchen-list-backend/webpack.config.js"
+				"webpackConfig": "apps/kitchen-list-backend/webpack.config.js",
+        "watch": true
 			},
 			"configurations": {
 				"production": {

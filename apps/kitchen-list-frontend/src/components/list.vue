@@ -11,15 +11,7 @@ import Divider from "primevue/divider";
 import axios from "axios";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import OrderList from "primevue/orderlist";
-
-interface ISuggestionListItem {
-  name: string;
-  id: number;
-}
-
-interface IListItem extends ISuggestionListItem {
-  actual: boolean;
-}
+import { ICategory, ISuggestionListItem, IListItem } from "../types";
 
 const userId = ref(localStorage.getItem("userId"));
 
@@ -27,26 +19,34 @@ const letters = ref([]);
 
 const letter = ref();
 
+const category: Ref<number | null> = ref(null);
+
 const newItem = ref();
+
+const newCategory = ref();
+
+const categoryList: Ref<ICategory[]> = ref([]);
+
+async function getCategoryList() {
+  const res = await axios.get("/api/goods-categories");
+  categoryList.value = res.data;
+  category.value = categoryList.value[0].id;
+}
 
 const suggestion: Ref<ISuggestionListItem[]> = ref([]);
 
 const list: Ref<IListItem[]> = ref([]);
 
-const changeLetter = async function (l?: string) {
-  if (!l) {
-    return;
-  }
-  const res = await axios.get(`/api/goods-list/${l}`);
-  if (res.data?.length) {
-    suggestion.value = res.data?.filter(
-      (item: { name: string; id: number }) => !list.value.find((v) => v.id === item.id)
-    );
-  }
+const changeLetter = async function (l?: string, category?: number) {
+  const res = await axios.get(`/api/goods-list/${l}`, { params: { category } });
+  suggestion.value = res.data?.filter(
+    (item: { name: string; id: number }) => !list.value.find((v) => v.id === item.id)
+  );
 };
 
-const getLetters = async function () {
-  const res = await axios.get("/api/goods-list/find");
+const getLetters = async function (category: number | null) {
+  if (!category) return;
+  const res = await axios.get("/api/goods-list/find", { params: { category } });
   letters.value = res.data;
   letter.value = letters.value[0];
 };
@@ -57,11 +57,22 @@ const addItem = function (newItem: ISuggestionListItem) {
   }
 };
 
+const addNewCategory = async function () {
+  if (!newCategory.value) return;
+  const res = await axios.post("/api/goods-categories", { name: newCategory.value });
+  newCategory.value = "";
+  getCategoryList();
+};
+
 const addNewItem = async function () {
-  const res = await axios.post("/api/goods-list", { name: newItem.value });
+  if (!newItem.value) return;
+  const res = await axios.post("/api/goods-list", {
+    name: newItem.value,
+    categories: [category.value],
+  });
   addItem(res.data);
   newItem.value = "";
-  getLetters();
+  getLetters(category.value);
 };
 
 const removeItem = function (id: number) {
@@ -70,36 +81,57 @@ const removeItem = function (id: number) {
 };
 
 watch(letter, (newValue?: string) => {
-  changeLetter(newValue);
+  if (category.value) {
+    changeLetter(newValue, category.value);
+  }
 });
 
-getLetters();
+watch(category, (newValue?: number | null) => {
+  if (newValue) {
+    getLetters(newValue);
+  }
+});
+
+getCategoryList();
 </script>
 
 <template>
   <div>
+    <InputGroup>
+      <InputText
+        v-model="newCategory"
+        v-on:keyup.enter="addNewCategory()"
+        placeholder="New Category"
+      />
+      <Button
+        icon="pi pi-check"
+        @click="addNewCategory()"
+        label="Add"
+        severity="success"
+      />
+    </InputGroup>
+    <Tabs v-model:value="category" scrollable>
+      <TabList>
+        <Tab v-for="tab in categoryList" v-bind:key="tab" :value="tab.id">{{
+          tab.name
+        }}</Tab>
+      </TabList>
+    </Tabs>
+    <Divider />
+    <InputGroup>
+      <InputText
+        v-model="newItem"
+        v-on:keyup.enter="addNewItem()"
+        placeholder="New Item"
+      />
+      <Button icon="pi pi-check" @click="addNewItem()" label="Add" severity="success" />
+    </InputGroup>
     <Tabs v-model:value="letter" scrollable>
       <TabList>
         <Tab v-for="tab in letters" v-bind:key="tab" :value="tab">{{ tab }}</Tab>
       </TabList>
 
       <TabPanels>
-        <InputGroup>
-          <InputText
-            v-model="newItem"
-            v-on:keyup.enter="addNewItem()"
-            placeholder="New Item"
-          />
-          <Button
-            icon="pi pi-check"
-            @click="addNewItem()"
-            label="Add"
-            severity="success"
-          />
-        </InputGroup>
-
-        <Divider />
-
         <OrderList
           class="order-list"
           v-model="suggestion"
@@ -148,6 +180,10 @@ getLetters();
 
 <style lang="scss">
 .order-list {
+  position: relative;
+  [data-pc-section="listcontainer"] {
+    overflow: auto;
+  }
   ul {
     display: flex;
     flex-wrap: wrap;
@@ -156,6 +192,7 @@ getLetters();
     list-style: none;
     padding: 0.5rem;
     margin: 0;
+    height: 100%;
     li {
       margin: 0.25rem;
     }
