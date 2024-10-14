@@ -1,9 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GoodEntity } from './models/good.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IGood } from './models/good.interface';
 import { CreateGoodDto } from './models/create-good.dto';
@@ -18,11 +15,15 @@ export class GoodsListService {
   ) {}
 
   async list() {
-    return this,this.goodsRepository.find({
-      relations:  {
+    return this.goodsRepository.find({
+      relations: {
         categories: true,
-      }
-    })
+      },
+    });
+  }
+
+  listByIds(ids: number[]) {
+    return this.goodsRepository.findBy({id: In(ids)})
   }
 
   async getLetters(categoryId?: number) {
@@ -55,7 +56,12 @@ export class GoodsListService {
   }
 
   async getItemById(id: number) {
-    return this.goodsRepository.findOneBy({ id });
+    return this.goodsRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+      },
+    });
   }
 
   async findByName(name: string) {
@@ -86,7 +92,7 @@ export class GoodsListService {
   async deleteItem(id: number) {
     const item = await this.getItemById(id);
     if (item) {
-      return this.goodsRepository.delete(item);
+      return this.goodsRepository.softRemove(item);
     }
     return;
   }

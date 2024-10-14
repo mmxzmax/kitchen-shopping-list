@@ -38,6 +38,7 @@ const suggestion: Ref<ISuggestionListItem[]> = ref([]);
 const list: Ref<IListItem[]> = ref([]);
 
 const changeLetter = async function (l?: string, category?: number) {
+  if(!l) return;
   const res = await axios.get(`/api/goods-list/${l}`, { params: { category } });
   suggestion.value = res.data?.filter(
     (item: { name: string; id: number }) => !list.value.find((v) => v.id === item.id)
@@ -87,6 +88,7 @@ watch(letter, (newValue?: string) => {
 });
 
 watch(category, (newValue?: number | null) => {
+  letter.value = null;
   if (newValue) {
     getLetters(newValue);
   }

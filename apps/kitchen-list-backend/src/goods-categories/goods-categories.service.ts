@@ -38,7 +38,7 @@ export class GoodsCategoriesService {
     async deleteCategory(id: number) {
         const item = await this.categoryById(id);
         if(item) {
-            return this.categoryRepository.delete({id});
+            return this.categoryRepository.softRemove({id});
         }
         return;
     }

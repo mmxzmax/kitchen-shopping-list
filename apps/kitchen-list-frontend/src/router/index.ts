@@ -4,8 +4,9 @@ import ProfileView from '../views/profileView.vue';
 import RegisterView from '../views/registerView.vue';
 import LoginView from '../views/loginView.vue';
 import axios from 'axios';
-import List from '../components/list.vue';
 import AdminView from '../views/adminView.vue';
+import Dashboard from '../components/dashboard.vue';
+import List from '../components/list.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,10 @@ const router = createRouter({
       children: [
         {
           path: '/',
+          component: Dashboard,
+        },
+        {
+          path: '/list/:id',
           component: List,
         },
         {
