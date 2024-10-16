@@ -58,19 +58,18 @@ export class UserShopListService {
       date: new Date(),
       comleted: false,
     });
-    return await this.listRepository.save(newList);
+    await this.listRepository.save(newList)
+    return {ok: true};
   }
 
   async editList(id: number, userId: number, data: EditUserShopListDto) {
     const existList = await this.listById(userId, id);
-    const newList = this.listRepository.merge(existList, {
-      name: data.name,
-      goods: await this._goodsListByIds(data.goods),
-      completedGoods: await this._goodsListByIds(data.completedGoods),
-      comleted: data.goods?.every(g => data.completedGoods.includes(g)),
-      date: new Date(),
-    });
-    return await this.listRepository.save(newList);
+    existList.name = data.name;
+    existList.goods = await this._goodsListByIds(data.goods);
+    existList.completedGoods = await this._goodsListByIds(data.completedGoods);
+    existList.comleted = data.goods?.every(g => data.completedGoods.includes(g));
+    existList.date = new Date();
+    return await this.listRepository.save(existList);
   }
 
   async deleteList(id: number, userId: number) {

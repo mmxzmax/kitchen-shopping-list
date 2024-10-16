@@ -27,7 +27,7 @@ export class UserShopListController {
   @Get(':id')
   listById(
     @GetUser('id') userId: number,
-    @Param(':id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number
   ) {
     return this.listService.listById(userId, id);
   }

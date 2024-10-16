@@ -4,7 +4,7 @@ export interface ISuggestionListItem {
 }
 
 export interface IListItem extends ISuggestionListItem {
-  actual: boolean;
+  completed: boolean;
 }
 
 export interface ICategory {
