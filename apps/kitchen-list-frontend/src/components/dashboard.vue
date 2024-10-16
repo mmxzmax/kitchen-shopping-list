@@ -2,7 +2,7 @@
 import axios from "axios";
 import { Ref, ref } from "vue";
 import Card from "primevue/card";
-import { IListItem, IShopListItem } from "../types";
+import { IShopListItem } from "../types";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import Button from "primevue/button";
@@ -14,11 +14,14 @@ import ConfirmPopup from "primevue/confirmpopup";
 import Toast from "primevue/toast";
 import { formatDate } from "../helpers";
 import Tag from "primevue/tag";
+import Dialog from "primevue/dialog";
 
 const confirm = useConfirm();
 const toast = useToast();
 
 const list: Ref<IShopListItem[]> = ref([]);
+
+const showAdd = ref(false);
 
 const listName = ref("");
 
@@ -31,6 +34,7 @@ async function addNewList() {
   if (!listName.value) return;
   await axios.post("/api/user-shop-list", { name: listName.value });
   listName.value = "";
+  showAdd.value = false;
   getList();
 }
 
@@ -75,25 +79,39 @@ getList();
   <div>
     <Toast />
     <ConfirmPopup />
-    <InputGroup>
-      <InputText
-        v-model="listName"
-        v-on:keyup.enter="addNewList()"
-        placeholder="New List"
-      />
-      <Button
-        icon="pi pi-plus"
-        @click="addNewList()"
-        label="Create New"
-        severity="success"
-      />
-    </InputGroup>
-
-    <Divider />
+    <Dialog
+      v-model:visible="showAdd"
+      modal
+      header="Create new list"
+      :style="{ width: '25rem' }"
+    >
+      <InputGroup>
+        <InputText
+          v-model="listName"
+          v-on:keyup.enter="addNewList()"
+          placeholder="New List"
+        />
+      </InputGroup>
+      <div class="add-list-buttons">
+        <Button
+          icon="pi pi-plus"
+          @click="addNewList()"
+          label="Create New"
+          severity="success"
+        />
+        <Button
+          icon="pi pi-close"
+          @click="showAdd = false"
+          label="Cancel"
+          severity="danger"
+        />
+      </div>
+    </Dialog>
 
     <ul class="user-shop-list">
+      <li><Button icon="pi pi-plus" @click="showAdd = true" severity="success" /></li>
       <li class="user-shop-list__item" v-for="listItem in list" v-bind:key="listItem.id">
-        <Card>
+        <Card @click="router.push(`/list/${listItem.id}`)">
           <template #title>{{ listItem.name }}</template>
           <template #content>
             <p class="m-0 user-shop-list__date">
@@ -102,22 +120,15 @@ getList();
             <Divider />
             <div class="user-shop-list__buttons">
               <Tag
-                :severity="listItem.completed ? 'success' : 'warn'"
-                :value="listItem.completed ? 'success' : 'in-work'"
+                :severity="listItem.comleted ? 'success' : 'warn'"
+                :value="listItem.comleted ? 'success' : 'in-work'"
                 rounded
               ></Tag>
-              <InputGroup>
-                <Button
-                  icon="pi pi-pen-to-square"
-                  @click="router.push(`/list/${listItem.id}`)"
-                  severity="success"
-                />
-                <Button
-                  icon="pi pi-trash"
-                  @click="confirmDelete($event, listItem)"
-                  severity="danger"
-                />
-              </InputGroup>
+              <Button
+                icon="pi pi-trash"
+                @click="confirmDelete($event, listItem)"
+                severity="danger"
+              />
             </div>
           </template>
         </Card>
@@ -154,6 +165,18 @@ getList();
     }
     .p-tag {
       margin-right: auto;
+    }
+  }
+}
+.add-list-buttons {
+  display: flex;
+  margin-top: 1rem;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  > * {
+    &:last-child {
+      margin-left: 0.5rem;
     }
   }
 }

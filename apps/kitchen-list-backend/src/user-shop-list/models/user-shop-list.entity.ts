@@ -29,13 +29,11 @@ export class UserShopListEntity {
   })
   user: UserEntity;
 
-  @ManyToMany(() => GoodEntity, (list) => list.listGoods, { cascade: true })
+  @ManyToMany(() => GoodEntity, (list) => list.listGoods)
   @JoinTable()
   goods: GoodEntity[];
 
-  @ManyToMany(() => GoodEntity, (list) => list.listCompletedGoods, {
-    cascade: true,
-  })
+  @ManyToMany(() => GoodEntity, (list) => list.listCompletedGoods)
   @JoinTable()
   completedGoods: GoodEntity[];
 

@@ -17,9 +17,7 @@ export class GoodEntity {
   @Column()
   name: string;
 
-  @ManyToMany(() => GoodSCategoryEntity, (list) => list.goods, {
-    cascade: true,
-  })
+  @ManyToMany(() => GoodSCategoryEntity, (list) => list.goods)
   @JoinTable()
   categories: GoodSCategoryEntity[];
 

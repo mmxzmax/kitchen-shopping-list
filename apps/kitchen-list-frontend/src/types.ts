@@ -16,5 +16,5 @@ export interface IShopListItem {
   id: number;
   name: string;
   date: Date;
-  completed: boolean;
+  comleted: boolean;
 }

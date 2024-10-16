@@ -5,6 +5,8 @@ import Menubar from "primevue/menubar";
 import { ref } from "vue";
 import router from "../router";
 
+const isAdmin = Boolean(localStorage.getItem('isAdmin'));
+
 const items = ref([
   {
     label: "Home",
@@ -25,6 +27,14 @@ const items = ref([
     },
   },
 ]);
+
+if(isAdmin) {
+  items.value.push({
+    label: "Admin",
+    icon: "pi pi-check",
+    route: "/admin",
+  },)
+}
 </script>
 
 <template>

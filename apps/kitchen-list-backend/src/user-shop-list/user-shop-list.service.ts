@@ -32,6 +32,10 @@ export class UserShopListService {
       where: {
         user: await this._getUserById(userId),
       },
+      order : {
+        date: 'DESC',
+        comleted: 'DESC'
+      }
     });
   }
 
@@ -40,7 +44,7 @@ export class UserShopListService {
       relations: {
         user: false,
         goods: true,
-        completedGoods: true
+        completedGoods: true,
       },
       where: {
         user: await this._getUserById(userId),
@@ -58,8 +62,8 @@ export class UserShopListService {
       date: new Date(),
       comleted: false,
     });
-    await this.listRepository.save(newList)
-    return {ok: true};
+    await this.listRepository.save(newList);
+    return { ok: true };
   }
 
   async editList(id: number, userId: number, data: EditUserShopListDto) {
@@ -67,13 +71,19 @@ export class UserShopListService {
     existList.name = data.name;
     existList.goods = await this._goodsListByIds(data.goods);
     existList.completedGoods = await this._goodsListByIds(data.completedGoods);
-    existList.comleted = data.goods?.every(g => data.completedGoods.includes(g));
+    existList.comleted = data.goods?.every((g) =>
+      data.completedGoods.includes(g)
+    );
     existList.date = new Date();
     return await this.listRepository.save(existList);
   }
 
   async deleteList(id: number, userId: number) {
     const existList = await this.listById(userId, id);
-    return await this.listRepository.softRemove(existList);
+    existList.completedGoods = [];
+    existList.goods = [];
+    await this.listRepository.save(existList);
+    await this.listRepository.delete({id});
+    return { ok: true };
   }
 }
