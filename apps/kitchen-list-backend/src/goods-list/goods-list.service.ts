@@ -23,7 +23,7 @@ export class GoodsListService {
   }
 
   listByIds(ids: number[]) {
-    return this.goodsRepository.findBy({id: In(ids)})
+    return this.goodsRepository.findBy({ id: In(ids) });
   }
 
   async getLetters(categoryId?: number) {
@@ -92,7 +92,12 @@ export class GoodsListService {
   async deleteItem(id: number) {
     const item = await this.getItemById(id);
     if (item) {
-      return this.goodsRepository.softRemove(item);
+      item.categories = [];
+      item.listCompletedGoods = [];
+      item.listGoods = [];
+      await this.goodsRepository.save(item);
+      await this.goodsRepository.delete({id});
+      return { ok: true };
     }
     return;
   }

@@ -25,6 +25,7 @@ const login = async function () {
       password: password.value,
     });
     localStorage.setItem('userId', res.data?.user?.id)
+    localStorage.setItem('isAdmin', String(res.data?.user?.role === 'admin'))
     router.push("/");
   }
 };
