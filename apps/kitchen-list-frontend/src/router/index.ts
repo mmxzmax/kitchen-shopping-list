@@ -4,6 +4,8 @@ import ProfileView from '../views/profileView.vue';
 import RegisterView from '../views/registerView.vue';
 import LoginView from '../views/loginView.vue';
 import axios from 'axios';
+import AdminView from '../views/adminView.vue';
+import Dashboard from '../components/dashboard.vue';
 import List from '../components/list.vue';
 
 const router = createRouter({
@@ -19,14 +21,26 @@ const router = createRouter({
       children: [
         {
           path: '/',
-          component: List
+          component: Dashboard,
         },
         {
-          path:'/profile',
+          path: '/list/:id',
+          component: List,
+        },
+        {
+          path: '/profile',
           name: 'profile',
-          component: ProfileView
-        }
-      ]
+          component: ProfileView,
+        },
+        {
+          path: '/admin',
+          name: 'admin',
+          component: AdminView,
+          meta: {
+            isAdmin: true,
+          },
+        },
+      ],
     },
     {
       path: '/register',
@@ -42,13 +56,25 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.meta.requiresAuth) {
+  if (to?.meta?.requiresAuth) {
     const isAuthorized = await axios
       .get('/api/auth/status')
       .then((response) => response.data as boolean)
       .catch((e) => false);
     if (isAuthorized) {
-      next();
+      if (to?.meta?.isAdmin) {
+        const isAdmin = await axios
+          .get('/api/auth/is-admin')
+          .then((response) => response.data as boolean)
+          .catch((e) => false);
+          if(isAdmin) {
+            next();
+          } else {
+            next('/');
+          }
+      } else {
+        next();
+      }
     } else {
       next('/login');
     }

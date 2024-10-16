@@ -4,6 +4,7 @@ import { LocalGuard } from '../guards/local.guard';
 import { LoginUserDto } from '../users/models/login-user.dto';
 import { RegisterUserDto } from '../users/models/register-user.dto';
 import { LoggedInGuard } from '../guards/logged-in.guard';
+import { AdminGuard } from '../guards/admin.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,12 @@ export class AuthController {
   @UseGuards(LoggedInGuard)
   @Get('status')
   status() {
+    return true;
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('is-admin')
+  isAdmin() {
     return true;
   }
 

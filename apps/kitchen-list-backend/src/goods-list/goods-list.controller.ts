@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { GoodsListService } from './goods-list.service';
 import { CreateGoodDto } from './models/create-good.dto';
 import { AdminGuard } from '../guards/admin.guard';
@@ -9,14 +9,19 @@ import { LoggedInGuard } from '../guards/logged-in.guard';
 export class GoodsListController {
   constructor(private readonly goodsListService: GoodsListService) {}
 
+  @Get()
+  list() {
+    return this.goodsListService.list();
+  }
+
   @Get('find')
-  lettersList() {
-    return this.goodsListService.getLetters();
+  lettersList(@Query('category', ParseIntPipe) categoryId: number) {
+    return this.goodsListService.getLetters(categoryId);
   }
 
   @Get(':letter')
-  listByLetter(@Param('letter') letter ) {
-    return this.goodsListService.getListByLetter(letter);
+  listByLetter(@Param('letter') letter, @Query('category', ParseIntPipe) categoryId: number ) {
+    return this.goodsListService.getListByLetter(letter, categoryId);
   }
 
   @Get(':id')
