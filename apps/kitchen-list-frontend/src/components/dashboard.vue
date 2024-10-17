@@ -39,6 +39,7 @@ async function addNewList() {
 }
 
 function confirmDelete(event: MouseEvent, item: IShopListItem) {
+  event.preventDefault();
   confirm.require({
     target: event.currentTarget as HTMLElement,
     message: "Are you sure you want to proceed?",
@@ -109,29 +110,40 @@ getList();
     </Dialog>
 
     <ul class="user-shop-list">
-      <li><Button icon="pi pi-plus" @click="showAdd = true" severity="success" /></li>
+      <li>
+        <Button
+          icon="pi pi-plus"
+          @click="
+            showAdd = true;
+            listName = formatDate(new Date());
+          "
+          severity="success"
+        />
+      </li>
       <li class="user-shop-list__item" v-for="listItem in list" v-bind:key="listItem.id">
-        <Card @click="router.push(`/list/${listItem.id}`)">
-          <template #title>{{ listItem.name }}</template>
-          <template #content>
-            <p class="m-0 user-shop-list__date">
-              <span>{{ formatDate(listItem.date) }}</span>
-            </p>
-            <Divider />
-            <div class="user-shop-list__buttons">
-              <Tag
-                :severity="listItem.comleted ? 'success' : 'warn'"
-                :value="listItem.comleted ? 'success' : 'in-work'"
-                rounded
-              ></Tag>
-              <Button
-                icon="pi pi-trash"
-                @click="confirmDelete($event, listItem)"
-                severity="danger"
-              />
-            </div>
-          </template>
-        </Card>
+        <RouterLink :to="`/list/${listItem.id}`">
+          <Card>
+            <template #title>{{ listItem.name }}</template>
+            <template #content>
+              <p class="m-0 user-shop-list__date">
+                <span>{{ formatDate(listItem.date) }}</span>
+              </p>
+              <Divider />
+              <div class="user-shop-list__buttons">
+                <Tag
+                  :severity="listItem.comleted ? 'success' : 'warn'"
+                  :value="listItem.comleted ? 'success' : 'in-work'"
+                  rounded
+                ></Tag>
+                <Button
+                  icon="pi pi-trash"
+                  @click="confirmDelete($event, listItem)"
+                  severity="danger"
+                />
+              </div>
+            </template>
+          </Card>
+        </RouterLink>
       </li>
     </ul>
   </div>

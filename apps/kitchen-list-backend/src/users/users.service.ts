@@ -12,6 +12,16 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>
   ) {}
 
+  async getUsersList() {
+    return await this.usersRepository.find({
+      select: {
+        id: true,
+        email: true,
+        role: true,
+      }
+    })
+  }
+
   async getUserByLogin(email: string) {
     return await this.usersRepository.findOne({
       where: { email },
@@ -52,5 +62,10 @@ export class UsersService {
       ...user,
     });
     return await this.usersRepository.save(userData);
+  }
+
+  async deleteUser(id: number) {
+    const user = this.getUserById(id);
+    await this.usersRepository.delete({id});
   }
 }

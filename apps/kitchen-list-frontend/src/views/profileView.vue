@@ -1,25 +1,116 @@
 <script lang="ts" setup>
 import axios from "axios";
 import Card from "primevue/card";
-import Menubar from "primevue/menubar";
-import { ref } from "vue";
-import router from "../router";
+import Inplace from "primevue/inplace";
+import { Ref, ref } from "vue";
+import { IUser } from "../types";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import InputGroup from "primevue/inputgroup";
+import Divider from "primevue/divider";
+import Tag from "primevue/tag";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+
+const toast = useToast();
+
+const userData: Ref<IUser | undefined> = ref();
+
+async function getUserData() {
+  const res = await axios.get("/api/users");
+  userData.value = res.data;
+}
+
+async function saveUser() {
+  if (!userData.value) return;
+  if (userData.value.firstName && userData.value.lastName) {
+    await axios.post(`/api/users/${userData.value.id}`, {
+      firstName: userData.value.firstName,
+      lastName: userData.value.lastName,
+    });
+    toast.add({
+      severity: "success",
+      summary: "Saved",
+      detail: `User ${userData.value.email} saved succesfully`,
+      life: 3000,
+    });
+  }
+}
+
+getUserData();
 </script>
 
 <template>
   <div class="about">
     <Card>
-      <template #title>Simple Card</template>
+      <template #title
+        >{{ userData?.email }} <Tag severity="info" :value="userData?.role"></Tag
+      ></template>
       <template #content>
-        <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed
-          consequuntur error repudiandae numquam deserunt quisquam repellat libero
-          asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
-          neque quas!
-        </p>
+        <div v-if="userData">
+          <Inplace style="margin-bottom: 0.5rem; width: 100%">
+            <template #display>
+              <span>{{ userData.firstName || "Click to Edit" }}</span>
+              <span class="pi pi-pencil"></span>
+            </template>
+            <template #content="{ closeCallback }">
+              <InputGroup>
+                <InputText v-model="userData.firstName" autofocus />
+                <Button
+                  icon="pi pi-times"
+                  text
+                  severity="danger"
+                  @click="closeCallback"
+                />
+              </InputGroup>
+            </template>
+          </Inplace>
+          <Inplace style="margin-bottom: 0.5rem; width: 100%">
+            <template #display>
+              <span>{{ userData.lastName || "Click to Edit" }}</span>
+              <span class="pi pi-pencil"></span>
+            </template>
+            <template #content="{ closeCallback }">
+              <InputGroup>
+                <InputText v-model="userData.lastName" autofocus />
+                <Button
+                  icon="pi pi-times"
+                  text
+                  severity="danger"
+                  @click="closeCallback"
+                />
+              </InputGroup>
+            </template>
+          </Inplace>
+          <Divider />
+          <div class="user-footer">
+            <Button
+              icon="pi pi-save"
+              label="Save"
+              severity="success"
+              @click="saveUser()"
+            />
+          </div>
+        </div>
       </template>
     </Card>
   </div>
+  <Toast />
 </template>
 
-<style></style>
+<style lang="scss">
+.p-inplace-content,
+.p-inplace-display {
+  width: 100%;
+}
+.p-inplace-display {
+  display: flex !important;
+  > :first-child {
+    width: 100%;
+  }
+}
+.user-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
