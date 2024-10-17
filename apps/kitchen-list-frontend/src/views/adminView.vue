@@ -14,7 +14,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import Dialog from "primevue/dialog";
 import Listbox from "primevue/listbox";
-import { ICategory } from "../types";
+import { ICategory, IUser } from "../types";
 
 interface IGood {
   name: string;
@@ -27,6 +27,7 @@ const toast = useToast();
 
 const visible = ref(false);
 
+const usersList: Ref<IUser[]> = ref([]);
 
 const newItem: Ref<string> = ref("");
 
@@ -36,6 +37,7 @@ const categoryList: Ref<ICategory[]> = ref([]);
 
 const editingRows = ref([]);
 const editingRows2 = ref([]);
+const editingRows3 = ref([]);
 
 const goodsList: Ref<IGood[]> = ref([]);
 
@@ -107,6 +109,41 @@ function confirmDelete(event: MouseEvent, cat: ICategory) {
   });
 }
 
+function confirmDeleteUser(event: MouseEvent, user: IUser) {
+  confirm.require({
+    target: event.currentTarget as HTMLElement,
+    message: "Are you sure you want to proceed?",
+    icon: "pi pi-exclamation-triangle",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Delete",
+    },
+    accept: async () => {
+      const res = await axios.delete(`/api/users/${user.id}`);
+      if (res) {
+        toast.add({
+          severity: "info",
+          summary: "Deleted",
+          detail: `User ${user.email} deleted succesfully`,
+          life: 3000,
+        });
+        getUsers();
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: `User ${user.email} is not deleted`,
+          life: 3000,
+        });
+      }
+    },
+  });
+}
+
 function confirmDeleteGood(event: MouseEvent, good: IGood) {
   confirm.require({
     target: event.currentTarget as HTMLElement,
@@ -162,8 +199,14 @@ function editGood(item: IGood | null, index?: number) {
   goodsList.value[index] = item;
 }
 
+async function getUsers() {
+  const res = await axios.get("/api/users/list");
+  usersList.value = res.data;
+}
+
 getCategoryList();
 getGoodsList();
+getUsers();
 </script>
 
 <template>
@@ -255,6 +298,37 @@ getGoodsList();
               <Button
                 icon="pi pi-trash"
                 @click="confirmDeleteGood($event, data)"
+                severity="danger"
+              />
+            </template>
+          </Column>
+        </DataTable>
+      </template>
+    </Card>
+
+    <Card>
+      <template #title>Users</template>
+      <template #content>
+        <DataTable
+          v-model:editingRows="editingRows3"
+          :value="usersList"
+          editMode="row"
+          dataKey="id"
+          @row-edit-save="saveGoodsInCategory"
+        >
+          <Column field="id" header="Id" style="width: 1rem"></Column>
+          <Column field="email" header="Email"></Column>
+          <Column field="role" header="Role"></Column>
+          <Column
+            :rowEditor="true"
+            style="width: 8rem"
+            bodyStyle="text-align:center"
+          ></Column>
+          <Column style="width: 8rem" bodyStyle="text-align:center">
+            <template #editor="{ data }">
+              <Button
+                icon="pi pi-trash"
+                @click="confirmDeleteUser($event, data)"
                 severity="danger"
               />
             </template>

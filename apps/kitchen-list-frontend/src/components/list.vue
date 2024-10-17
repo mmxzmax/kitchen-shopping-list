@@ -59,7 +59,7 @@ const getLetters = async function (category: number | null) {
   if (!category) return;
   const res = await axios.get("/api/goods-list/find", { params: { category } });
   letters.value = res.data;
-  if(!letter.value) {
+  if (!letter.value) {
     letter.value = letters.value[0];
   }
 };
@@ -93,8 +93,8 @@ const addNewItem = async function () {
 
 const removeItem = function (itemId: number) {
   const index = list.value.findIndex((item) => item.id === itemId);
-  const {id, name} = list.value.splice(index, 1)[0];
-  suggestion.value.push({id, name});
+  const { id, name } = list.value.splice(index, 1)[0];
+  suggestion.value.push({ id, name });
 };
 
 async function saveList() {
@@ -112,10 +112,14 @@ function setListData(data: {
   goods: ISuggestionListItem[];
   completedGoods: ISuggestionListItem[];
 }) {
-  list.value = data?.goods?.map((item: ISuggestionListItem) => ({
-    ...item,
-    completed: !data?.completedGoods?.find((v: ISuggestionListItem) => item.id === v.id),
-  })).sort((a,b) => a.completed && !b.completed ? -1 : 1);
+  list.value = data?.goods
+    ?.map((item: ISuggestionListItem) => ({
+      ...item,
+      completed: !data?.completedGoods?.find(
+        (v: ISuggestionListItem) => item.id === v.id
+      ),
+    }))
+    .sort((a, b) => (a.completed && !b.completed ? -1 : 1));
 }
 
 async function getList() {
@@ -207,7 +211,7 @@ getList();
           </template>
         </OrderList>
 
-        <InputGroup v-if="!suggestion?.length && categoryList?.length">
+        <InputGroup style="margin: 0 0.75rem" v-if="categoryList?.length">
           <InputText
             v-model="newItem"
             v-on:keyup.enter="addNewItem()"
