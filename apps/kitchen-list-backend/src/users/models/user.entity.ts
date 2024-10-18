@@ -6,6 +6,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { UserShopListEntity } from '../../user-shop-list/models/user-shop-list.entity';
+import { TgContactEntity } from './tg-contacts.entity';
 
 @Entity()
 export class UserEntity {
@@ -30,10 +31,18 @@ export class UserEntity {
   @Column()
   salt: string;
 
+  @Column({ nullable: true })
+  tgUid: string;
+
   @OneToMany(() => UserShopListEntity, (list) => list.user, {
     cascade: true,
   })
   lists: UserShopListEntity[];
+
+  @OneToMany(() => TgContactEntity, (contacts) => contacts.user, {
+    cascade: true,
+  })
+  tgContacts: TgContactEntity[];
 
   @DeleteDateColumn()
   deleteDate: Date;

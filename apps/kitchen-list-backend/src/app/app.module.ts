@@ -14,6 +14,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GoodsListModule } from '../goods-list/goods-list.module';
 import { GoodsCategoriesModule } from '../goods-categories/goods-categories.module';
 import { UserShopListModule } from '../user-shop-list/user-shop-list.module';
+import { TgModule } from '../tg/tg.module';
+import { TgService } from '../tg/tg.service';
+import TelegramBot from 'node-telegram-bot-api';
 
 @Module({
   imports: [
@@ -40,6 +43,7 @@ import { UserShopListModule } from '../user-shop-list/user-shop-list.module';
     GoodsListModule,
     GoodsCategoriesModule,
     UserShopListModule,
+    TgModule,
   ],
   providers: [AppService, Logger],
   controllers: [AppController],
@@ -48,7 +52,8 @@ export class AppModule {
   store: RedisStore;
   constructor(
     @Inject(REDIS) private readonly redis: RedisClientType,
-    private readonly cofig: ConfigService
+    private readonly cofig: ConfigService,
+    private readonly tg: TgService,
   ) {
     this.store = new RedisStore({
       client: this.redis,

@@ -1,0 +1,1 @@
+export const TG_BOT = Symbol('TG_BOT');

@@ -21,16 +21,34 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @UseGuards(AdminGuard)
-  @Get('list') 
+  @Get('list')
   list() {
     return this.userService.getUsersList();
   }
 
   @Get()
   async getUser(@GetUser('id') curentUser: number) {
-    const { id, firstName, lastName, email, role } =
+    const { id, firstName, lastName, email, role, tgContacts } =
       await this.userService.getUserById(curentUser);
-    return { id, firstName, lastName, email, role };
+    return {
+      id,
+      firstName,
+      lastName,
+      email,
+      role,
+      tgContacts: tgContacts.map(({ id, name }) => ({ id, name })),
+    };
+  }
+
+  @Get('tg-invite-link')
+  async tgLink(@GetUser('id') curentUser: number) {
+    const uid = await this.userService.getTgUid(curentUser);
+    return { link: `https://t.me/kkitchenshoppinglist_bot?start=${uid}` };
+  }
+
+  @Get('tg-contacts')
+  tgContacts(@GetUser('id') curentUser: number) {
+    return this.userService.getUsersContacts(curentUser);
   }
 
   @Post(':id')

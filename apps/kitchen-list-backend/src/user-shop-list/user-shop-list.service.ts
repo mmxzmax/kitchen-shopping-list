@@ -78,6 +78,19 @@ export class UserShopListService {
     return await this.listRepository.save(existList);
   }
 
+  async setGoodComplete(listId: number, goodId: number) {
+    const list = await this.listRepository.findOne({where: {id: listId}, relations: {
+      goods: true,
+      completedGoods: true,
+    }});
+    const goods = await this._goodsListByIds([goodId])
+    if(list) {
+      list.completedGoods = [...(list.completedGoods ?? []), ...goods];
+      await this.listRepository.save(list);
+    }
+    return;
+  }
+
   async deleteList(id: number, userId: number) {
     const existList = await this.listById(userId, id);
     existList.completedGoods = [];

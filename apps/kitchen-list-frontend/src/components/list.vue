@@ -11,7 +11,7 @@ import Divider from "primevue/divider";
 import axios from "axios";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import OrderList from "primevue/orderlist";
-import { ICategory, ISuggestionListItem, IListItem } from "../types";
+import { ICategory, ISuggestionListItem, IListItem, ITgContact } from "../types";
 import ToggleSwitch from "primevue/toggleswitch";
 import router from "../router";
 import { formatDate } from "../helpers";
@@ -34,6 +34,21 @@ const newCategory = ref();
 const categoryList: Ref<ICategory[]> = ref([]);
 
 const createCategoryDialog = ref(false);
+
+const tgContacts: Ref<ITgContact[]> = ref([]);
+
+const showTg = ref(false);
+
+async function getTgContacts() {
+  const res = await axios.get("/api/users/tg-contacts");
+  tgContacts.value = res.data;
+  showTg.value = true;
+}
+
+async function sendListToContact(contact: ITgContact) {
+  const res = await axios.get(`/api/tg/${contact.id}/${routeId}`);
+  showTg.value = false;
+}
 
 async function getCategoryList() {
   const res = await axios.get("/api/goods-categories");
@@ -152,6 +167,19 @@ getList();
 </script>
 
 <template>
+  <Dialog
+    v-model:visible="showTg"
+    modal
+    header="Send List To Contact"
+    :style="{ width: '25rem' }"
+  >
+    <ul class="tg-contact-list">
+      <li v-for="contact in tgContacts" v-bind:key="contact.id">
+        <span>{{ contact.name }}</span>
+        <Button icon="pi pi-send" @click="sendListToContact(contact)" />
+      </li>
+    </ul>
+  </Dialog>
   <div v-if="!isEdit">
     <h3 class="list-header">
       {{ pagedata?.name }}
@@ -171,6 +199,7 @@ getList();
       </li>
     </ul>
     <span v-if="!list?.length">No available options</span>
+    <Button @click="getTgContacts()" label="Send To Contact" />
   </div>
   <div v-if="isEdit">
     <InputGroup>
@@ -324,6 +353,20 @@ getList();
   }
   .p-button {
     width: 3.5rem;
+  }
+}
+.tg-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  > li {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.5rem 0;
+    .p-button {
+      margin-left: 1rem;
+    }
   }
 }
 </style>

@@ -42,3 +42,9 @@ export interface IUser {
   email: string;
   role: string;
 }
+
+export interface ITgContact {
+  id: number,
+  name: string,
+  chatId: number,
+}
