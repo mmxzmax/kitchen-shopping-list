@@ -44,6 +44,7 @@ jobs:
           REDIS_SECRET: ${{secrets.REDIS_SECRET}}
           REDIS_URL: ${{secrets.REDIS_URL}}
           DB_NAME: ${{secrets.DB_NAME}}
+          TG_BOT_KEY: ${{secrets.TG_BOT_KEY}}
         run: |
           docker --context remote compose -f docker-compose.yml pull nginx
           docker --context remote compose -f docker-compose.yml pull node

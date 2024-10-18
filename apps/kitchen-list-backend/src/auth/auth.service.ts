@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { compare, hash } from 'bcrypt';
 import { LoginUserDto } from '../users/models/login-user.dto';
 import { RegisterUserDto } from '../users/models/register-user.dto';
 import { IUser } from '../users/models/user.interface';

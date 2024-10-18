@@ -11,6 +11,7 @@ import Divider from "primevue/divider";
 import Tag from "primevue/tag";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
+import InputGroupAddon from "primevue/inputgroupaddon";
 
 const toast = useToast();
 
@@ -37,7 +38,37 @@ async function saveUser() {
   }
 }
 
+const tgLink = ref();
+
+async function getTgLink() {
+  const res = await axios.get("/api/users/tg-invite-link");
+  tgLink.value = res.data?.link;
+}
+
+const tgInput = ref(null);
+
+function copyTgLink() {
+  navigator.clipboard.writeText(tgLink.value).then(
+    function () {
+      toast.add({
+        severity: "success",
+        summary: "coppyed",
+        detail: `tg link copyed to clippboard succesfully`,
+        life: 3000,
+      });
+    },
+    function (err) {
+      toast.add({
+        severity: "error",
+        summary: "coppy error",
+        life: 3000,
+      });
+    }
+  );
+}
+
 getUserData();
+getTgLink();
 </script>
 
 <template>
@@ -47,6 +78,17 @@ getUserData();
         >{{ userData?.email }} <Tag severity="info" :value="userData?.role"></Tag
       ></template>
       <template #content>
+        <InputGroup>
+          <InputGroupAddon>
+            <a :href="tgLink" target="_blank"
+              ><i class="pi pi-link"></i>
+              <span style="margin-left: 0.25rem">follow</span></a
+            >
+          </InputGroupAddon>
+          <InputText v-model="tgLink" />
+          <Button label="copy" icon="pi pi-copy" @click="copyTgLink()"></Button>
+        </InputGroup>
+        <Divider />
         <div v-if="userData">
           <Inplace style="margin-bottom: 0.5rem; width: 100%">
             <template #display>
