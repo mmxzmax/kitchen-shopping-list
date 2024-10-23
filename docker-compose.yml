@@ -11,7 +11,8 @@ services:
         - '${DB_PORT}:5432'
   redis:
     image: redis:latest
-    command: ["redis-server", "--bind", "redis", "--port", "6379"]     
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+    restart: always     
   nginx:
     image: ghcr.io/mmxzmax/kitchen-shopping-list-frontend:main
     ports:
